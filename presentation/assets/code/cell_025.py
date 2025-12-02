@@ -1,0 +1,1 @@
+X_pca, pca_model = reducer.apply_pca(X_scaled, n_components=0.95)

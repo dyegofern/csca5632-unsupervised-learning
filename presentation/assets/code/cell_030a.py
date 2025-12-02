@@ -1,0 +1,7 @@
+fig, ax = plt.subplots(figsize=(14, 10))
+sns.heatmap(loading_matrix, cmap='RdBu_r', center=0, annot=True, fmt='.2f', cbar_kws={'label': 'Loading'}, ax=ax)
+ax.set_title(f'Feature Loadings Heatmap: Top {n_top_features} Features vs Principal Components', fontweight='bold', fontsize=14, pad=20)
+ax.set_xlabel('Principal Components', fontweight='bold')
+ax.set_ylabel('Features', fontweight='bold')
+plt.tight_layout()
+plt.show()

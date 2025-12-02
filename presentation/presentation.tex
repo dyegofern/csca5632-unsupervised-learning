@@ -1,0 +1,842 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Theme and Color Scheme
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% University of Colorado Boulder Colors
+\definecolor{PrimaryColor}{RGB}{207,184,124}
+\definecolor{SecondaryColor}{RGB}{0,0,0}
+\definecolor{TertiaryColor}{RGB}{86,90,92}
+\definecolor{QuaternaryColor}{RGB}{162,164,163}
+
+% Apply color scheme
+\setbeamercolor{palette primary}{bg=PrimaryColor,fg=black}
+\setbeamercolor{palette secondary}{bg=TertiaryColor,fg=white}
+\setbeamercolor{palette tertiary}{bg=SecondaryColor,fg=PrimaryColor}
+\setbeamercolor{palette quaternary}{bg=PrimaryColor,fg=black}
+\setbeamercolor{structure}{fg=SecondaryColor}
+\setbeamercolor{section in toc}{fg=SecondaryColor}
+\setbeamercolor{subsection in head/foot}{bg=TertiaryColor,fg=white}
+
+% Title colors
+\setbeamercolor{title}{fg=PrimaryColor,bg=SecondaryColor}
+\setbeamercolor{frametitle}{fg=black,bg=PrimaryColor}
+
+% Block colors
+\setbeamercolor{block title}{bg=PrimaryColor,fg=black}
+\setbeamercolor{block body}{bg=QuaternaryColor!20,fg=black}
+
+% Alert block colors
+\setbeamercolor{block title alerted}{bg=SecondaryColor,fg=PrimaryColor}
+\setbeamercolor{block body alerted}{bg=TertiaryColor!20,fg=black}
+
+% Item colors
+\setbeamercolor{item}{fg=PrimaryColor}
+\setbeamercolor{subitem}{fg=TertiaryColor}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Configure listings to handle UTF-8
+\lstset{
+    inputencoding=utf8,
+    extendedchars=true,
+    literate=
+        {²}{{\textsuperscript{2}}}1
+        {³}{{\textsuperscript{3}}}1
+        {°}{{\textdegree}}1
+        {±}{{\textpm}}1
+        {×}{{\texttimes}}1
+        {÷}{{\textdiv}}1
+        {≤}{{\leq}}1
+        {≥}{{\geq}}1
+        {≠}{{\neq}}1
+        {∞}{{\infty}}1
+}
+
+% Define CODE macro for Python code
+\lstdefinestyle{pythonstyle}{
+    language=Python,
+    basicstyle=\ttfamily\scriptsize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!50!black}\itshape,
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    escapeinside={(*@}{@*)},
+    xleftmargin=0.5cm,
+    xrightmargin=0.5cm,
+    inputencoding=utf8,
+    extendedchars=true
+}
+
+\lstset{style=pythonstyle}
+
+% CODE macro to include external Python files
+\newcommand{\CODE}[1]{\lstinputlisting{assets/code/#1}}
+
+% Title Information
+\title{CSCA 5632 - Intro. to Machine Learning}
+\subtitle{\textbf{Unsupervised Learning}}
+\author{Dyego Fernandes de Sousa}
+\institute{University of Colorado Boulder}
+\date{\today}
+
+% Logo on title page
+\titlegraphic{\includegraphics[height=1.5cm]{assets/logos/cu_logo.svg}}
+
+% Footer customization
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\begin{document}
+
+% Title Slide
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{This is a job for the Un\textbf{SUPER}vised Learning. Problem Statement}
+To showcase and apply techniques of \textbf{Unsupervised Learning} at the brand-level data to discover:
+\begin{itemize}
+    \item \textbf{Hidden Patterns}
+    \begin{itemize}
+        \item \textbf{Natural groupings} Clusters of brands based on their multi-dimensional characteristics
+        \item \textbf{Unusual patterns} and outliers that don't fit conventional categorizations
+        \item \textbf{Relationships} between environmental performance, market positioning, and consumer targeting
+    \end{itemize}
+    \item \textbf{Latent Features} that drive brand differentiation
+\end{itemize}
+\textbf{The Hypothesis:}\\
+A company being compliant with ESG practices, doesn't mean that all of their brands also comply?
+\end{frame}
+
+\begin{frame}{Dataset}
+\textbf{Primary Dataset:} Comprehensive brand-level dataset, based on my \textbf{Supervised Learning project}.
+It contains:
+\begin{itemize}
+    \item \textbf{Industry \& Company Data}: ESG scores, emissions (scope1+2), revenues, environmental risk indicators
+    \item \textbf{Brand Demographics}: Age group targeting, income levels, lifestyle segments
+    \item \textbf{Operational Features}: Franchise model, online sales, fleet ownership, drive-through
+    \item \textbf{Sustainability Metrics}: Electric vehicle \%, ESG programs, sustainability awards, R\&D spending
+\end{itemize}
+\textbf{Dataset Shape:}
+\begin{itemize}
+    \item 3,600+ brands across multiple industries and parent companies
+    \item 77+ features
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Methodology}
+    \begin{itemize}
+        \item 1. \textbf{Data Loading and Preprocessing}: Loading, handling missing values, etc
+        \item 2. \textbf{Feature Engineering}: Creating additional features, etc
+        \item 3. \textbf{Feature Selection}: Select relevant features
+        \item 4. \textbf{Feature Scaling}: Standardizization
+        \item 5. \textbf{Dimensionality Reduction}:
+    \begin{itemize}
+        \item \textbf{PCA} for variance reduction and \textbf{latent feature discovery}
+        \item t-SNE for 2D visualization
+    \end{itemize}
+    \item 6. \textbf{Hyperparameter Tuning}:
+    \begin{itemize}
+        \item Grid search and multi-metric evaluation
+    \end{itemize}
+        \item 7. \textbf{Clustering with Optimized Parameters}:
+    \begin{itemize}
+        \item K-Means, Hierarchical, DBSCAN (outliers/noise)
+    \end{itemize}
+        \item 8. \textbf{Cluster Interpretation}: Profile segments
+        \item 9. \textbf{Validation}: Compare algorithms
+    \end{itemize}
+\end{frame}
+
+\section{Data Preprocessing and Feature Selection}
+
+\begin{frame}[shrink=10]{Feature Engineering}
+Creating features that capture ESG risk and sustainability patterns.
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_011.py}
+                \caption{Feature Engineering}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_001.png}
+                \caption{Environmental Risk Score plot}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[shrink=30]{Features Selection for Clustering + Encoding}
+Focus on features that capture \textbf{Company-level ESG}, \textbf{Brand demographics}, \textbf{Operational characteristics}, \textbf{Sustainability metrics}.
+\begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+        \begin{figure}
+            \CODE{cell_013.py}
+            \caption{Logical grouping of features}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+        \begin{figure}
+            \CODE{cell_015.py}
+            \caption{Encoding categorical features}
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[shrink=20]{Feature Engineering and Scaling}
+Examine alignment/misalignment between:
+\begin{itemize}
+    \item Brand sustainability positioning vs. company environmental performance
+    \item Premium pricing vs. actual ESG investment
+    \item Marketing claims vs. operational reality
+    \item Check the \textbf{Appendix} for more details
+\end{itemize}
+
+    \begin{figure}
+        \CODE{cell_019.py}
+        \caption{Feature Engineering and Scaling}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Divergence and Hipocresy Analysis Result}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_002.png}
+        \caption{Divergence plot}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[shring=50,fragile]{Dimensionality Reduction}
+    Applying PCA to reduce dimensionality
+    \vspace{-0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \scalebox{0.75}{\CODE{cell_025.py}}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \scalebox{0.75}{\CODE{cell_026.py}}
+            \end{figure}
+        \end{column}
+    \end{columns}
+    \vspace{-0.5em}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth,height=0.40\textheight,keepaspectratio]{assets/figures/figure_003.png}
+        \caption{Variance Explained after PCA plots}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[shring=15,fragile]{Top Features per Component}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_027.py}
+                \caption{Visualization code}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{assets/figures/figure_004.png}
+                \caption{Visualization}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[shring=20]{Latent Feature Interpretation}
+Latent features discovered. Check the \textbf{Appendix} for the code.
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_005.png}
+        \caption{Latent Features}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{PCA Visualing the Latent Space}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_006.png}
+        \caption{Plots in the Latent Space}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[shrink=40]{Hyperparameter Tuning - K-Means}
+Systematic hyperparameter tuning on \textbf{K-Means}, \textbf{Hierarchical}, and \textbf{DBSCAN}
+\textbf{Best parameters used in final clustering and analysis.}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \CODE{cell_037.py}
+                \caption{Instantiating the HP tuner, check the Appendix and the git repo for more details}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \CODE{cell_041.py}
+                \caption{HP tuning K-Means}
+            \end{figure}
+        \end{column}
+    \end{columns}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_007.png}
+        \caption{HP tuning K-Means - plot}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[shrink=40]{Hyperparameter Tuning - Hierarchical}
+    \begin{figure}
+        \CODE{cell_044.py}
+        \caption{HP Tuning Hierarchical}
+    \end{figure}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_008.png}
+        \caption{HP Tuning Hierarchical - plot}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[shrink=40]{Hyperparameter Tuning - DBSCAN}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \CODE{cell_047.py}
+                \caption{HP Tuning DBSCAN}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.95\textheight,keepaspectratio]{assets/figures/figure_009.png}
+                \caption{HP Tuning DBSCAN - plot}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Model Selection Based on Hyperparameter Tuning Results}
+Models and best hyperparameters comparison:
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|l|}
+\hline
+Algorithm & Silhouette & Calinski-Harabasz & Davies-Bouldin & n\_clusters & Noise \% & Best Hyperparameters \\
+\hline
+\textbf{Hierarchical} & \textbf{0.9429} & 310.03 & \textbf{0.0382} & 2 & 0\% & linkage=average, metric=euclidean \\
+DBSCAN & 0.6829 & \textbf{3000.96} & 0.4708 & 10 & 13.3\% & eps=1.4671, min\_samples=20 \\
+K-Means & 0.6581 & 547.22 & 1.5229 & 5 & 0\% & n\_clusters=5, n\_init=10, max\_iter=100 \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\textbf{Model Selection Rationale:}
+\begin{itemize}
+    \item \textbf{Hierarchical}: Best overall with highest silhouette (0.94) and lowest Davies-Bouldin (0.04).
+    \item \textbf{DBSCAN}: Highest Calinski-Harabasz (3000.96), useful for outlier detection.
+    \item \textbf{K-Means}: Balanced baseline with moderate cluster count (k=5).
+\end{itemize}
+\textbf{Decision}: Primary focus on Hierarchical, with DBSCAN for outlier analysis.
+\end{frame}
+
+\begin{frame}[shring=50]{Best Hierarchical}
+    \begin{columns}[T]
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_010.png}
+                \caption{Dendogram}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_011.png}
+                \caption{Segmentation}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_012.png}
+                \caption{By cluster}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}{Best DBSCAN}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_013.png}
+                \caption{Segmentation}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_014.png}
+                \caption{K-Means as baseline}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile,allowframebreaks]{Clusters Interpretation}
+    \begin{columns}[T]
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.26\textheight,keepaspectratio]{assets/figures/figure_016.png}
+                \caption{Brands x Risk score}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.26\textheight,keepaspectratio]{assets/figures/figure_017.png}
+                \caption{Brands x Risk bucket}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.85\textwidth,height=0.7\textheight,keepaspectratio]{assets/figures/figure_021.png}
+                \caption{Industries Distribution}
+            \end{figure}
+        \end{column}
+    \end{columns}
+
+    \begin{columns}[T]
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.26\textheight,keepaspectratio]{assets/figures/figure_018.png}
+                \caption{Top 5 Industries per Cluster}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.26\textheight,keepaspectratio]{assets/figures/figure_019.png}
+                \caption{Top 5 Companies per Cluster}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth,height=0.26\textheight,keepaspectratio]{assets/figures/figure_020.png}
+                \caption{Top 5 Brands per Cluster - By scope}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Clustering Results: My Honest Assessment}
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|l|l|}
+\hline
+Algorithm & Clusters & Silhouette & Distribution & Key Observation \\
+\hline
+\textbf{K-Means} & 5 & 0.658 & 3,092 / 213 / 153 / 146 / 1 & One dominant cluster (86\%) + one singleton \\
+\textbf{Hierarchical} & 2 & 0.943 & 3,604 / 1 & Effectively a single cluster + 1 outlier \\
+\textbf{DBSCAN} & 10 & 0.683 & Various (20-1,777) & 13.3\% noise (481 brands) \\
+\hline
+\end{tabular}%
+}
+\end{table}
+The results diverge from my initial expectations. Rather than discovering distinct, well-separated market segments, the algorithms suggest that \textbf{the brand space is largely continuous rather than discretely segmented}.
+\end{frame}
+
+\begin{frame}{Conclusion - Failure or Not Failure?}
+\begin{itemize}
+    \item \textbf{The Finding IS the Insight}: Brands don't segment into distinct groups; differentiation operates on continuous spectra, not discrete categories.
+    \item \textbf{Rigorous Methodology}: 25 features, 255 HP combinations tested, PCA with interpretable latent dimensions.
+    \item \textbf{Outlier Detection}: DBSCAN identified 481 outlier brands (13.3\%) with higher revenue and emissions; worth individual investigation.
+    \item \textbf{Future Work}: Clean dataset ready for Deep Learning analysis.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Acknowledgement of Limitations}
+\begin{itemize}
+    \item \textbf{Feature Space}: The 25 features may not capture the dimensions that truly differentiate brands in meaningful ways
+    \item \textbf{Data Homogeneity}: Brands within this ESG database proved to be inherently similar; The reason is that they were pre-selected for sustainability reporting purposes
+    \item \textbf{Scale Imbalance}: My finding of one dominant cluster across all algorithms confirms at least one of the hypotheses: the data is either homogeneous or suboptimal
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Final Word}
+\textbf{The project is not a waste of effort.} While the clustering results fell short of discovering dramatically distinct brand segments, the work accomplished legitimate goals:
+\begin{itemize}
+    \item Demonstrated mastery of unsupervised learning techniques and proper application
+    \item Revealed an honest truth about the data
+    \item Produced a clean, engineered dataset ready for advanced analysis
+    \item Identified the class imbalance problem that GANs can directly address
+\end{itemize}
+\\
+\textbf{The journey continues in the Deep Learning project.}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\begin{enumerate}
+    \item \textbf{Jain, A. K. (2010).} \textit{Data clustering: 50 years beyond K-means.} Pattern Recognition Letters, 31(8), 651-666.
+    \item \textbf{Hartigan, J. A., \& Wong, M. A. (1979).} \textit{Algorithm AS 136: A K-Means Clustering Algorithm.} Journal of the Royal Statistical Society. Series C, 28(1), 100-108.
+    \item \textbf{Ester, M., Kriegel, H. P., Sander, J., \& Xu, X. (1996).} \textit{A density-based algorithm for discovering clusters in large spatial databases with noise.} KDD-96 Proceedings, 226-231.
+    \item \textbf{van der Maaten, L., \& Hinton, G. (2008).} \textit{Visualizing Data using t-SNE.} JMLR, 9, 2579-2605.
+    \item \textbf{Jolliffe, I. T., \& Cadima, J. (2016).} \textit{Principal component analysis: a review and recent developments.} Phil. Trans. R. Soc. A, 374(2065).
+    \item \textbf{Rousseeuw, P. J. (1987).} \textit{Silhouettes: A graphical aid to the interpretation and validation of cluster analysis.} J. Comput. Appl. Math., 20, 53-65.
+    \item \textbf{Pedregosa, F., et al. (2011).} \textit{Scikit-learn: Machine Learning in Python.} JMLR, 12, 2825-2830.
+    \item \textbf{scikit-learn Documentation.} \textit{Clustering.} https://scikit-learn.org/stable/modules/clustering.html
+    \item \textbf{scikit-learn Documentation.} \textit{Decomposition (PCA).} https://scikit-learn.org/stable/modules/decomposition.html
+    \item \textbf{Caliński, T., \& Harabasz, J. (1974).} \textit{A dendrite method for cluster analysis.} Comm. in Statistics, 3(1), 1-27.
+    \item \textbf{Davies, D. L., \& Bouldin, D. W. (1979).} \textit{A Cluster Separation Measure.} IEEE Trans. PAMI, 1(2), 224-227.
+    \item \textbf{Google Developers.} \textit{Clustering in Machine Learning.} https://developers.google.com/machine-learning/clustering
+    \item \textbf{Towards Data Science.} \textit{The 5 Clustering Algorithms Data Scientists Need to Know.}
+    \item \textbf{StatQuest with Josh Starmer.} \textit{K-means clustering.} YouTube.
+    \item \textbf{The GHG Shopper application.} https://ghgshopper.org
+\end{enumerate}
+\end{frame}
+
+\section{Appendix}
+\begin{frame}{Appendix - Project Structure}
+The implementation uses modular Python files:
+\begin{itemize}
+    \item \texttt{clustering\_models.py} - K-Means, Hierarchical, DBSCAN + HyperparameterTuner
+    \item \texttt{dimensionality\_reduction.py} - PCA and t-SNE with component analysis
+    \item \texttt{visualization\_utils.py} - Plotting and visualization functions
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink=40,fragile]{Appendix - Feature Engineering and Scaling}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_020.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_020a.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[shrink=20]{Appendix - Interpreting Brand-Company Divergence Scores}
+These divergence scores measure the alignment (or misalignment) between a brand's positioning and its parent company's actual environmental performance.
+\textbf{Sustainability Divergence:}
+\begin{itemize}
+    \item \textbf{Positive values (> 0)}: Brand positions strongly on sustainability while parent company has higher environmental risk → \textbf{High divergence} (brand is more environmentally conscious than company)
+    \item \textbf{Negative values (< 0)}: Brand under-emphasizes sustainability despite parent company's better environmental performance → \textbf{Reverse divergence} (company is more environmentally conscious than brand positioning suggests)
+    \item \textbf{Near zero (≈ 0)}: Brand positioning aligns with company environmental performance → \textbf{Aligned}
+\end{itemize}
+\textbf{ESG-Premium Divergence:}
+\begin{itemize}
+    \item \textbf{Positive values}: Premium brand from company with stronger ESG performance → \textbf{Aligned premium positioning}
+    \item \textbf{Negative values}: Premium brand from company with weaker ESG performance → \textbf{Misaligned premium positioning}
+    \item \textbf{Near zero}: Premium positioning matches ESG performance level → \textbf{Consistent}
+\end{itemize}
+\textbf{Key Insight:} These scores help identify patterns in how brands strategically position themselves relative to their parent companies, which is central to understanding brand-company environmental alignment.
+\end{frame}
+
+\begin{frame}[shring=60,fragile]{Visualizations}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_022.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_022a.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}[shring=50,fragile]{Visualizations}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_023.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_023a.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[shring=50,fragile]{Visualizations}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_029.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_029a.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}[shring=50,fragile]{Appendix - Latent Features Interpretation - Code}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_030.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_030a.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[shring=50,fragile]{Visualizations}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_031.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_031a.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}[shring=50,fragile]{Visualizations}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_032.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_032a.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Appendix - Business Interpretation of Latent Features}
+Would this ever be used in the real business world, the Clusters should be named to represent what they mean. For the scope of this project I simply named them sequentially with placeholders, as I don't claim to be an ESG expert.\\
+Using the following names for Principal Components:
+\begin{itemize}
+    \item \textbf{PC1}: PC-1
+    \item \textbf{PC2}: PC-2
+    \item \textbf{PC3}: PC-2
+\end{itemize}
+Using the following names for Clusters:
+\begin{itemize}
+    \item \textbf{CL\_01}: CL\_01
+    \item \textbf{CL\_02}: CL\_02
+    \item \textbf{CL\_n}: CL\_n
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{t-SNE}
+    \begin{figure}
+        \CODE{cell_035.py}
+        \caption{Applying t-SNE on PCA-reduced data}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[shring=50,fragile]{Hyperparameter Tuning variables for ranges}
+    \begin{figure}
+        \CODE{cell_039.py}
+        \caption{Values for HP tuning}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[shring=50,fragile]{Hyperparameter Tuning - Continued}
+    \begin{figure}
+        \CODE{cell_050.py}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[shring=35,fragile]{Hyperparameter Tuning - Continued}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_051.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_054.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}[shrink=50,fragile]{Hierarchical}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_055.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_056.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]{DBSCAN}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_058.py}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \CODE{cell_061.py}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Visualization}
+    \begin{figure}
+        \CODE{cell_062.py}
+    \end{figure}
+\end{frame}
+
+\section{Accomplishments}
+
+\begin{frame}{Data Processing}
+\begin{itemize}
+    \item Successfully integrated \textbf{3,605 brands} across \textbf{243 unique companies} and \textbf{14 industries}
+    \item Combined multiple data sources: industry ESG data, company emissions, brand demographics
+    \item Engineered \textbf{environmental\_risk\_score} metric from multiple greenwashing and risk factors
+    \item Handled missing values and normalized \textbf{25 features} across different scales
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Dimensionality Reduction}
+\begin{itemize}
+    \item Applied \textbf{PCA} to reduce noise and preserve 95\% of variance (25 → 17 dimensions)
+    \item Applied \textbf{t-SNE} for 2D visualization of high-dimensional brand space
+    \item Identified key principal components driving brand differentiation:
+    \item \textbf{PC1 (15.07\%)}: Environmental Risk Dimension (deforestation, labor exploitation, greenwashing)
+    \item \textbf{PC2 (12.21\%)}: Scale \& Sustainability Dimension (EV\%, loyalty index, revenue, employees)
+    \item \textbf{PC3 (10.71\%)}: Corporate Size Dimension (revenue, employees, market cap)
+    \item \textbf{PC4 (10.30\%)}: Income Demographics Dimension (income targeting patterns)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Clustering Analysis}
+\begin{itemize}
+    \item Implemented and compared \textbf{3 clustering algorithms} with systematic hyperparameter tuning
+    \item Applied multi-metric evaluation (Silhouette, Calinski-Harabasz, Davies-Bouldin)
+    \item Tested \textbf{114 K-Means}, \textbf{57 Hierarchical}, and \textbf{84 DBSCAN} parameter combinations
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Deliverables}
+\begin{itemize}
+    \item Exportable CSV with cluster assignments for all brands
+    \item Comprehensive visualizations (PCA variance, t-SNE plots, cluster profiles)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Future Enhancement: Deep Learning with GANs (Potentially Pretrained)}
+This unsupervised learning project serves as a foundation for the upcoming \textbf{Deep Learning final project}, where the plan is to:
+
+Use Clusters as Pseudo-Labels\\
+The K-Means 5-cluster solution, despite its imbalance, provides initial class labels for supervised approaches.
+Address Class Imbalance with GANs\\
+\textbf{Generative Adversarial Networks} can synthesize new samples for underrepresented clusters:
+\begin{itemize}
+    \item The K-Means clusters 1-4 (213, 153, 146, 1 brands) are severely underrepresented vs Cluster 0 (3,092)
+    \item GANs can generate realistic \textit{synthetic} brand profiles to balance training data
+    \item This will enable training to be more robust, and classifiers will work better for brand segment prediction
+\end{itemize}
+Improved Segmentation:\\
+With balanced, augmented data, deep learning models may discover finer-grained patterns that traditional clustering missed.
+Validation Pipeline:\\
+The augmented dataset can train and evaluate classification models, with held-out original data serving as ground truth.
+Another round of Unsupervised Learning:\\
+At the end, the generated augmented dataset can be re-analyzed using this pipeline to evaluate the Cluster distribution.
+\end{frame}
+
+\end{document}

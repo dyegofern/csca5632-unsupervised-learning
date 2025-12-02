@@ -1,0 +1,6 @@
+full_df['sustainability_positioning'] = ( full_df['electric_vehicles_percent'] * 0.4 + (0.3 if full_df['esg_programs'].count() > 0 else 0) + full_df['major_sustainability_award_last5y'].astype(float) * 0.3)
+emissions_normalized = (full_df['scope12_total'] - full_df['scope12_total'].min()) / (full_df['scope12_total'].max() - full_df['scope12_total'].min())
+full_df['company_env_risk'] = (emissions_normalized * 0.5 + full_df['environmental_risk_score'] * 0.5)
+full_df['sustainability_divergence'] = full_df['sustainability_positioning'] - (1 - full_df['company_env_risk'])
+full_df['premium_positioning'] = (full_df['age_seniors'].astype(float) * 0.4 + full_df['income_premium'].astype(float) * 0.6)
+full_df['esg_premium_divergence'] = full_df['premium_positioning'] - (1 - full_df['company_env_risk'])
